@@ -7,18 +7,17 @@ class App extends Component {
     super()
     this.state = {
       list : [],
-      newItem : {}
+      newItem : {},
+      completedItems : []
     }
   }
 
   buttonClick = () => {
-    console.log("clicked")
     if(this.state.newItem.value!== "") {
       let newArray = this.state.list.slice();
-      console.log("clicked2")
       newArray.push(this.state.newItem);
-      console.log(this.state.newItem);
       this.setState({list : newArray})
+      console.log(this.state.list)
     }
   }
 
@@ -33,13 +32,17 @@ class App extends Component {
 
 
   deleteItem = (key) => {
+    let deletedItem = this.state.list.filter(function (item){
+      return (item.key === key)
+    });
     let filteredItems = this.state.list.filter(function (item) {
       return (item.key!==key)
     });
-    console.log(filteredItems)
-    this.setState({
-      list: filteredItems
-    });
+    let completedItemsArray = this.state.completedItems.slice();
+    completedItemsArray.push(deletedItem[deletedItem.length -1]);
+    console.log(completedItemsArray)
+    this.setState({completedItems: completedItemsArray});
+    this.setState({list: filteredItems});
   }
 
 
@@ -50,7 +53,8 @@ class App extends Component {
       <input onChange={(e) => this.addToList(e)} placeholder = "Enter item here"></input>
       <button onClick={this.buttonClick}>Add Item</button>
       <TodoItems entries={this.state.list}
-      delete={this.deleteItem}/>
+      delete={this.deleteItem}
+      deleted={this.state.completedItems}/>
       </header>
       </div>
     );
