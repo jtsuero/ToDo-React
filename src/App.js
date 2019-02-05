@@ -17,7 +17,6 @@ class App extends Component {
       let newArray = this.state.list.slice();
       newArray.push(this.state.newItem);
       this.setState({list : newArray})
-      console.log(this.state.list)
     }
   }
 
@@ -27,9 +26,21 @@ class App extends Component {
       value: event.target.value,
       key: Date.now()
     }
-    this.setState({newItem: newestItem}) 
+    this.setState({newItem: newestItem}); 
   }
 
+  addAgain = (key) => {
+    let deletedItem = this.state.completedItems.filter(function (item){
+      return (item.key === key)
+    });
+    let filteredItems = this.state.completedItems.filter(function (item) {
+      return (item.key!==key)
+    });
+    let completedItemsArray = this.state.list.slice();
+    completedItemsArray.push(deletedItem[deletedItem.length -1]);
+    this.setState({list: completedItemsArray});
+    this.setState({completedItems: filteredItems});
+  }
 
   deleteItem = (key) => {
     let deletedItem = this.state.list.filter(function (item){
@@ -40,7 +51,6 @@ class App extends Component {
     });
     let completedItemsArray = this.state.completedItems.slice();
     completedItemsArray.push(deletedItem[deletedItem.length -1]);
-    console.log(completedItemsArray)
     this.setState({completedItems: completedItemsArray});
     this.setState({list: filteredItems});
   }
@@ -54,7 +64,8 @@ class App extends Component {
       <button onClick={this.buttonClick}>Add Item</button>
       <TodoItems entries={this.state.list}
       delete={this.deleteItem}
-      deleted={this.state.completedItems}/>
+      deleted={this.state.completedItems}
+      addAgain={this.addAgain}/>
       </header>
       </div>
     );
