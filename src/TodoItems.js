@@ -5,27 +5,20 @@ class TodoItems extends Component {
     super(props);
 
   }
-  createTasks = (item) => {
-    return <li onClick={() => this.delete(item.key)} key={item.key}>{item.value}</li>
+  toDoItem = (item) => {
+    return <li onClick={() => this.props.moveItem(item.key, true)} key={item.key}>{item.value}</li>
   }
 
-  deletedTasks = (item) => {
-    return <li onClick={() => this.addAgain(item.key)} key={item.key}>{item.value}</li>
+  completedItems = (item) => {
+    return <li onClick={() => this.props.moveItem(item.key, false)} key={item.key}>{item.value}</li>
   }
 
-  delete = (key) => {
-    this.props.delete(key);
-  }
-
-  addAgain = (key) => {
-    this.props.addAgain(key);
-  }
 
   render() {
     let todoEntries = this.props.entries;
-    let listItems = todoEntries.map(this.createTasks);
+    let listItems = todoEntries.map(this.toDoItem);
     let todoComplete = this.props.deleted;
-    let deletedItems = todoComplete.map(this.deletedTasks);
+    let deletedItems = todoComplete.map(this.completedItems);
 
     return (
       <div>

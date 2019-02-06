@@ -7,66 +7,68 @@ class App extends Component {
     super()
     this.state = {
       list : [],
-      newItem : {},
+      newItemTextInput : "",
       completedItems : []
     }
   }
 
   buttonClick = () => {
-    if(this.state.newItem.value!== "") {
+    if(this.state.newItemTextInput!== "") {
+      let newItem = {
+        value: this.state.newItemTextInput,
+        key: Date.now()
+      }
       let newArray = this.state.list.slice();
-      newArray.push(this.state.newItem);
-      this.setState({list : newArray})
+      newArray.push(newItem);
+      this.setState({
+        list : newArray,
+        newItemTextInput : ""
+      });
     }
   }
 
+  getInput = (event) => {
+    this.setState({newItemTextInput: event.target.value});
+  }
 
-  addToList = (event) => {
-    let newestItem = {
-      value: event.target.value,
-      key: Date.now()
+  moveItem = (key, complete = true) => {
+    let from = this.state.list.slice();
+    let to = this.state.completedItems.slice();
+    if(!complete) {
+      from = this.state.completedItems.slice();
+      to = this.state.list.slice();
     }
-    this.setState({newItem: newestItem}); 
-  }
 
-  addAgain = (key) => {
-    let deletedItem = this.state.completedItems.filter(function (item){
+    //remove some item from the array
+    let item = from.find((item) => {
       return (item.key === key)
     });
-    let filteredItems = this.state.completedItems.filter(function (item) {
+    to.push(item);
+
+    from = from.filter((item) => {
       return (item.key!==key)
     });
-    let completedItemsArray = this.state.list.slice();
-    completedItemsArray.push(deletedItem[deletedItem.length -1]);
-    this.setState({list: completedItemsArray});
-    this.setState({completedItems: filteredItems});
-  }
 
-  deleteItem = (key) => {
-    let deletedItem = this.state.list.filter(function (item){
-      return (item.key === key)
-    });
-    let filteredItems = this.state.list.filter(function (item) {
-      return (item.key!==key)
-    });
-    let completedItemsArray = this.state.completedItems.slice();
-    completedItemsArray.push(deletedItem[deletedItem.length -1]);
-    this.setState({completedItems: completedItemsArray});
-    this.setState({list: filteredItems});
-  }
+      this.setState((state,props) => {
+        if(complete) {
+          return {list: from, completedItems: to}
+        } else {
+          return {list: to, completedItems: from}
+        }
+      });
 
+  }
 
   render() {
     return (
       <div className="App">
-      <header className="App-header">
-      <input onChange={(e) => this.addToList(e)} placeholder = "Enter item here"></input>
-      <button onClick={this.buttonClick}>Add Item</button>
-      <TodoItems entries={this.state.list}
-      delete={this.deleteItem}
-      deleted={this.state.completedItems}
-      addAgain={this.addAgain}/>
-      </header>
+        <header className="App-header">
+          <input onChange={(e) => this.getInput(e)} value = {this.state.newItemTextInput}></input>
+          <button onClick={this.buttonClick}>Add Item</button>
+          <TodoItems entries={this.state.list}
+            deleted={this.state.completedItems}
+            moveItem={this.moveItem}/>
+        </header>
       </div>
     );
   }
